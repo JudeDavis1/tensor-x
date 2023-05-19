@@ -84,28 +84,33 @@ struct Variable: public Op {
 
 struct Sigmoid: public Op {
     Op* input;
+    bool did_forward_pass = false;
 
     Sigmoid(Op* input)
         : Op(0), input(input) {
         AddInput(input);
-        }
+    }
     
     float Forward() override {
         data = 1 / (1 + exp(-input->Forward()));
+        did_forward_pass = true;
         return data;
     }
 
     float GradFn(Op* input) override {
+        if (!did_forward_pass) {
+            Forward();
+        }
         return data * (1 - data);
     }
 };
 
 
 int main() {
-    Variable a(1);
-    Sigmoid b(&a);
-    b.Forward();
-    b.Backward(1);
+    Variable a(1), b(234);
+    Mul c(&a, &b);
+    Sigmoid d(&c);
+    d.Backward(1);
 
-    std::cout << a.grad << " " << b.grad << std::endl;
+    std::cout << a.grad << " " << d.grad << std::endl;
 }
