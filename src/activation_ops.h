@@ -1,12 +1,12 @@
 #include "base_ops.h"
 
 
-struct Sigmoid: public Op {
-    Op* input;
+struct Sigmoid: public BaseOp {
+    BaseOp* input;
     bool did_forward_pass = false;
 
-    Sigmoid(Op* input)
-        : Op(0), input(input) {
+    Sigmoid(BaseOp* input)
+        : BaseOp(0), input(input) {
         AddInput(input);
     }
     
@@ -16,7 +16,7 @@ struct Sigmoid: public Op {
         return data;
     }
 
-    float GradFn(Op* input) override {
+    float GradFn(BaseOp* input) override {
         if (!did_forward_pass) {
             this->Forward();
         }

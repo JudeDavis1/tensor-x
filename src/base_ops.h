@@ -5,14 +5,14 @@
  * The base node for the computation graph.
  * This represents an operation (e.g. addition, multiplication, etc.)
 */
-struct Op {
+struct BaseOp {
     float data, grad;
-    std::vector<Op*> inputs;
+    std::vector<BaseOp*> inputs;
 
-    Op(float data, float grad = 0)
+    BaseOp(float data, float grad = 0)
         : data(data), grad(grad) {}
     
-    void AddInput(Op* input) { inputs.push_back(input); }
+    void AddInput(BaseOp* input) { inputs.push_back(input); }
 
     virtual float Forward() = 0;
     virtual void Backward(float new_grad) {
@@ -26,15 +26,15 @@ struct Op {
     };
 
 protected:
-    virtual float GradFn(Op* input) = 0;
+    virtual float GradFn(BaseOp* input) = 0;
 };
 
 
-struct Add: public Op {
-    Op *a, *b;
+struct Add: public BaseOp {
+    BaseOp *a, *b;
 
-    Add(Op* a, Op* b)
-        : Op(0), a(a), b(b) {}
+    Add(BaseOp* a, BaseOp* b)
+        : BaseOp(0), a(a), b(b) {}
 
     float Forward() override {
         data = a->Forward() + b->Forward();
@@ -42,15 +42,15 @@ struct Add: public Op {
     }
 
 private:
-    float GradFn(Op* input) override {
+    float GradFn(BaseOp* input) override {
         return 1.0f;
     }
 };
 
 
-struct Mul: public Op {
-    Mul(Op* a, Op* b)
-        : Op(0) {
+struct Mul: public BaseOp {
+    Mul(BaseOp* a, BaseOp* b)
+        : BaseOp(0) {
         AddInput(a);
         AddInput(b);
     }
@@ -61,7 +61,7 @@ struct Mul: public Op {
     }
 
 private:
-    float GradFn(Op* input) override {
+    float GradFn(BaseOp* input) override {
         if (input == inputs[0]) {
             return inputs[1]->data;
         }
@@ -70,15 +70,15 @@ private:
 };
 
 
-struct Variable: public Op {
+struct Variable: public BaseOp {
     Variable(float data)
-        : Op(data) {}
+        : BaseOp(data) {}
 
     float Forward() override {
         return data;
     }
 
-    float GradFn(Op* input) override {
+    float GradFn(BaseOp* input) override {
         return 1.0f;
     }
 };
