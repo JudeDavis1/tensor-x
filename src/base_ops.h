@@ -30,6 +30,9 @@ protected:
 };
 
 
+/**
+ * Addition routine.
+*/
 struct Add: public BaseOp {
     BaseOp *a, *b;
 
@@ -48,6 +51,9 @@ private:
 };
 
 
+/**
+ * Multiplication routine.
+*/
 struct Mul: public BaseOp {
     Mul(BaseOp* a, BaseOp* b)
         : BaseOp(0) {
@@ -70,6 +76,10 @@ private:
 };
 
 
+/**
+ * A variable node.
+ * This is a leaf node in the computation graph.
+*/
 struct Variable: public BaseOp {
     Variable(float data)
         : BaseOp(data) {}

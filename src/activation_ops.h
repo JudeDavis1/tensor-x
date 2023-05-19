@@ -1,6 +1,9 @@
 #include "base_ops.h"
 
 
+/**
+ * The sigmoid activation function.
+ */
 struct Sigmoid: public BaseOp {
     BaseOp* input;
     bool did_forward_pass = false;
